@@ -14,45 +14,113 @@
 
 'use strict';
 
-const movieDB = {
-    movies: [
-        "Логан",
-        "Лига справедливости",
-        "Ла-ла лэнд",
-        "Одержимость",
-        "Скотт Пилигрим против..."
-    ]
+const init = () => {
+
+    const movieDB = {
+        movies: [
+            "Логан",
+            "Лига справедливости",
+            "Ла-ла лэнд",
+            "Одержимость",
+            "Скотт Пилигрим против..."
+        ]
+    };
+
+    const promo = document.querySelector('.promo');
+    const advertising = promo.querySelector('.promo__adv');
+    const promoBg = promo.querySelector('.promo__bg');
+    const promoGenre = promo.querySelector('.promo__genre');
+    const moviesList = promo.querySelector('.promo__interactive-list');
+    const promoForm = promo.querySelector('.add');
+    const moviesInput = promoForm.querySelector('.adding__input');
+    const trashClassname = 'delete';
+    const isFilmFavorite = promoForm.querySelector('.yes');
+    const isFilmFavoriteCheckbox = isFilmFavorite.previousElementSibling;
+    let addingMovie;
+
+    advertising.remove();
+
+    promoGenre.textContent = 'Драма';
+
+    promoBg.style.backgroundImage = "url('./img/bg.jpg')";
+
+    const documentFragment = new DocumentFragment();
+
+    const sortArray = (arr) => {
+        arr.sort();
+    };
+
+    const createMovieListElement = (addingMovie, index) => {
+        const listElement = document.createElement('li');
+        listElement.classList.add('promo__interactive-item');
+        listElement.textContent = `${index + 1}. ${addingMovie}`;
+        const listElementTrash = document.createElement('div');
+        listElementTrash.classList.add('delete');
+        listElement.append(listElementTrash);
+        return listElement;
+    };
+
+    const clearNodeChildren = (node) => {
+        while (node.firstChild) {
+            node.firstChild.remove();
+        }
+    };
+
+    const placeMoviesIntoNode = (movies, nodeToPlace) => {
+        sortArray(movies);
+
+        clearNodeChildren(nodeToPlace);
+
+        for (let i = 0; i < movies.length; i++) {
+            const newMovie = createMovieListElement(movies[i], i);
+            documentFragment.append(newMovie);
+        }
+
+        nodeToPlace.append(documentFragment);
+
+        nodeToPlace.querySelectorAll(`.${trashClassname}`).forEach((btn, i) => {
+            btn.addEventListener('click', (evt) => {
+
+                console.log('Click');
+
+                const target = evt.target;
+                if (target.classList.contains(trashClassname)) {
+
+                    target.parentElement.remove();
+
+                    movieDB.movies.splice(i, 1);
+
+                    placeMoviesIntoNode(movieDB.movies, moviesList);
+                }
+            })
+        });
+    };
+
+    promoForm.addEventListener('submit', evt => {
+        evt.preventDefault();
+        const target = evt.target;
+        addingMovie = moviesInput.value;
+
+        if (!!addingMovie) {
+
+            if (addingMovie.length > 21) {
+                addingMovie = `${addingMovie.slice(0, 21)}...`;
+            }
+
+            if (!movieDB.movies.includes(addingMovie)) {
+                movieDB.movies.push(addingMovie);
+                placeMoviesIntoNode(movieDB.movies, moviesList);
+
+                if (isFilmFavoriteCheckbox.checked) {
+                    console.log('Добавляем фильм в любимые');
+                }
+            }
+
+            target.reset();
+        }
+    });
+
+    placeMoviesIntoNode(movieDB.movies, moviesList);
 };
 
-const promo = document.querySelector('.promo');
-const advertising = promo.querySelector('.promo__adv');
-const promoBg = promo.querySelector('.promo__bg');
-const promoGenre = promo.querySelector('.promo__genre');
-const moviesList = promo.querySelector('.promo__interactive-list');
-
-advertising.remove();
-
-promoGenre.textContent = 'Драма';
-
-promoBg.style.backgroundImage = "url('./img/bg.jpg')";
-
-const newMoviesList = new DocumentFragment();
-
-movieDB.movies.sort();
-
-for (const film of movieDB.movies) {
-    const listElement = document.createElement('li');
-    listElement.classList.add('promo__interactive-item');
-    listElement.textContent = film;
-    newMoviesList.append(listElement);
-}
-
-while(moviesList.firstChild) {
-    moviesList.firstChild.remove();
-}
-
-moviesList.append(newMoviesList);
-
-for (let i = 0; i <  moviesList.children.length; i++) {
-    moviesList.children[i].insertAdjacentText("afterbegin", i + 1 + '. ');
-}
+document.addEventListener('DOMContentLoaded', init);
