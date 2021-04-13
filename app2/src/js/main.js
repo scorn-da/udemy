@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+  const UTILS = {
+    time: {
+      hoursInADay: 24,
+      minutesInAHour: 60,
+      secondsInAMinute: 60,
+      millisecondsInASecond: 1000,
+    },
+  };
   const tabsContainer = document.querySelector('.tabcontainer');
   const tabs = tabsContainer.querySelectorAll('.tabheader__item');
   const tabsContent = tabsContainer.querySelectorAll('.tabcontent');
@@ -37,4 +46,58 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   });
+
+  // Timer
+
+  const deadline = '2021-04-15';
+
+  function getNumberWithZero(number) {
+    if (number >= 0 && number < 10) {
+      return `0${number}`;
+    } else {
+      return number;
+    }
+  }
+
+  function getTimerSpread(endtime) {
+      const timerSpread = Date.parse(endtime) - Date.parse(new Date());
+      const days = Math.floor(timerSpread / (UTILS.time.millisecondsInASecond * UTILS.time.secondsInAMinute * UTILS.time.minutesInAHour * UTILS.time.hoursInADay));
+      const hours = Math.floor((timerSpread / (UTILS.time.millisecondsInASecond * UTILS.time.secondsInAMinute)) % UTILS.time.hoursInADay);
+      const minutes = Math.floor((timerSpread / UTILS.time.millisecondsInASecond / UTILS.time.secondsInAMinute) % UTILS.time.minutesInAHour);
+      const seconds = Math.floor((timerSpread / UTILS.time.millisecondsInASecond) % UTILS.time.secondsInAMinute);
+
+      return {
+        'total': timerSpread,
+        'days': days,
+        'hours': hours,
+        'minutes': minutes,
+        'seconds': seconds
+      };
+  }
+  
+  function setTimer(selector, endtime) {
+    const timer = document.querySelector(selector);
+    const days = timer.querySelector('#days');
+    const hours = timer.querySelector('#hours');
+    const minutes = timer.querySelector('#minutes');
+    const seconds = timer.querySelector('#seconds');
+    const timeInterval = setInterval(updateTimer, UTILS.time.millisecondsInASecond);
+
+    updateTimer();
+
+    function updateTimer() {
+      const timerSpread = getTimerSpread(endtime);
+
+      days.textContent = getNumberWithZero(timerSpread.days);
+      hours.textContent = getNumberWithZero(timerSpread.hours);
+      minutes.textContent = getNumberWithZero(timerSpread.minutes);
+      seconds.textContent = getNumberWithZero(timerSpread.seconds);
+
+      if (timerSpread.total <= 0) {
+        clearInterval(timeInterval);
+      }
+    }
+  }
+
+  setTimer('.timer', deadline);
 });
