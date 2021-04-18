@@ -122,6 +122,14 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.remove(HIDDEN_CLASSNAME);
     modal.classList.add(SHOWN_CLASSNAME, FADE_CLASSNAME);
     document.body.style.overflowY = 'hidden';
+    clearInterval(modalTimerId);
+  }
+
+  function showModalByScroll () {
+    if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+      openModal();
+      window.removeEventListener('scroll', showModalByScroll)
+    }
   }
 
   openModalBtns.forEach(btn => {
@@ -144,5 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (evt.code === 'Escape') {
       closeModal();
     }
-  })
+  });
+
+  const modalTimerId = setTimeout(openModal, 5000);
+
+  window.addEventListener('scroll', showModalByScroll);
 });
