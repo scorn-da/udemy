@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
       millisecondsInASecond: 1000,
     },
   };
+  const HIDDEN_CLASSNAME = 'hide';
+  const SHOWN_CLASSNAME = 'show';
+  const FADE_CLASSNAME = 'fade';
+
   const tabsContainer = document.querySelector('.tabcontainer');
   const tabs = tabsContainer.querySelectorAll('.tabheader__item');
   const tabsContent = tabsContainer.querySelectorAll('.tabcontent');
@@ -16,8 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function hideTabContent () {
     tabsContent.forEach(item => {
-      item.classList.add('hide');
-      item.classList.remove('show', 'fade');
+      item.classList.add(HIDDEN_CLASSNAME);
+      item.classList.remove(SHOWN_CLASSNAME, FADE_CLASSNAME);
     });
 
     tabs.forEach(tab => {
@@ -26,8 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function showTabContent(i = 0) {
-    tabsContent[i].classList.add('show', 'fade');
-    tabsContent[i].classList.remove('hide');
+    tabsContent[i].classList.add(SHOWN_CLASSNAME, FADE_CLASSNAME);
+    tabsContent[i].classList.remove(HIDDEN_CLASSNAME);
     tabs[i].classList.add('tabheader__item_active');
   }
 
@@ -100,4 +104,45 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   setTimer('.timer', deadline);
+
+
+  // Modal
+
+  const modal = document.querySelector('.modal');
+  const openModalBtns = document.querySelectorAll('[data-modal-open]');
+  const closeModalBtn = document.querySelector('[data-modal-close]');
+
+  function closeModal () {
+    modal.classList.remove(SHOWN_CLASSNAME, FADE_CLASSNAME);
+    modal.classList.add(HIDDEN_CLASSNAME);
+    document.body.style.overflowY = 'visible';
+  }
+
+  function openModal () {
+    modal.classList.remove(HIDDEN_CLASSNAME);
+    modal.classList.add(SHOWN_CLASSNAME, FADE_CLASSNAME);
+    document.body.style.overflowY = 'hidden';
+  }
+
+  openModalBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (modal.classList.contains(HIDDEN_CLASSNAME)) {
+        openModal();
+      }
+    });
+  });
+
+  closeModalBtn.addEventListener('click', closeModal);
+
+  modal.addEventListener('click', (evt) => {
+    if (evt.target === modal) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener('keydown', (evt) => {
+    if (evt.code === 'Escape') {
+      closeModal();
+    }
+  })
 });
