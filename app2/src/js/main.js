@@ -110,25 +110,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const modal = document.querySelector('.modal');
   const openModalBtns = document.querySelectorAll('[data-modal-open]');
-  const closeModalBtn = document.querySelector('[data-modal-close]');
 
-  function closeModal () {
+  function closeModal() {
     modal.classList.remove(SHOWN_CLASSNAME, FADE_CLASSNAME);
     modal.classList.add(HIDDEN_CLASSNAME);
     document.body.style.overflowY = 'visible';
   }
 
-  function openModal () {
+  function openModal() {
     modal.classList.remove(HIDDEN_CLASSNAME);
     modal.classList.add(SHOWN_CLASSNAME, FADE_CLASSNAME);
     document.body.style.overflowY = 'hidden';
     clearInterval(modalTimerId);
   }
 
-  function showModalByScroll () {
+  function showModalByScroll() {
     if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
       openModal();
-      window.removeEventListener('scroll', showModalByScroll)
+      window.removeEventListener('scroll', showModalByScroll);
     }
   }
 
@@ -140,30 +139,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  closeModalBtn.addEventListener('click', closeModal);
-
-  modal.addEventListener('click', (evt) => {
-    if (evt.target === modal) {
+  modal.addEventListener('click', evt => {
+    if (evt.target === modal || evt.target.getAttribute('data-modal-close') === '') {
       closeModal();
     }
   });
 
-  document.addEventListener('keydown', (evt) => {
+  document.addEventListener('keydown', evt => {
     if (evt.code === 'Escape') {
       closeModal();
     }
   });
 
-  const modalTimerId = setTimeout(openModal, 5000);
-
+  const modalTimerId = setTimeout(openModal, 50000);
   window.addEventListener('scroll', showModalByScroll);
 
   // adding content
 
   const menuCardsContainer = document.querySelector('.menu .container');
 
-  const clearElement = (element) => {
-    while(element.firstChild) {
+  const clearElement = element => {
+    while (element.firstChild) {
       element.firstChild.remove();
     }
   };
@@ -244,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const forms = document.querySelectorAll('form');
 
   const messages = {
-    loading: 'Загрузка',
+    loading: './img/form/spinner.svg',
     success: 'Спасибо! Мы с Вами свяжемся',
     failure: 'Что-то пошло не так...'
   };
@@ -255,10 +251,15 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', (evt) => {
       evt.preventDefault();
 
-      const statusMessage = document.createElement('div');
-      statusMessage.classList.add('status');
+      const statusMessage = document.createElement('img');
+      statusMessage.src = messages.loading;
+      statusMessage.style.cssText = `
+          display: block;
+          margin: 0 auto;
+      `;
       statusMessage.textContent = messages.loading;
       form.append(statusMessage);
+      form.insertAdjacentElement('afterend', statusMessage);
 
       const xhr = new XMLHttpRequest();
       xhr.open('POST', 'server.php');
@@ -279,16 +280,39 @@ document.addEventListener('DOMContentLoaded', () => {
       xhr.addEventListener('load', () => {
         if (xhr.status === 200) {
           console.log(xhr.response);
-          statusMessage.textContent = messages.success;
+          showThanksModal(messages.success);
           form.reset();
           setTimeout(() => {
             statusMessage.remove()
           }, 2000);
         } else {
-          statusMessage.textContent = messages.failure;
+          showThanksModal(messages.failure);
         }
-      })
-
+      });
     })
+  }
+
+  function showThanksModal(message) {
+    const previousModalDialog = document.querySelector('.modal__dialog');
+
+    previousModalDialog.classList.add('hide');
+    openModal();
+
+    const thanksModal = document.createElement('div');
+    thanksModal.classList.add('modal__dialog');
+    thanksModal.innerHTML = `
+      <div class="modal__content">
+        <div class="modal__close" data-modal-close aria-label="Закрыть окно">&times;</div>
+        <div class="modal__title">${message}</div>
+      </div>
+    `;
+
+    document.querySelector('.modal').append(thanksModal);
+    setTimeout(() => {
+      thanksModal.remove();
+      previousModalDialog.classList.add('show');
+      previousModalDialog.classList.remove('hide');
+      closeModal();
+    }, 4000)
   }
 });
