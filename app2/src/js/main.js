@@ -171,12 +171,13 @@ document.addEventListener('DOMContentLoaded', () => {
   clearElement(menuCardsContainer);
 
   class MenuCard {
-    constructor(src, alt, title, description, price, parentSelector) {
+    constructor(src, alt, title, description, price, parentSelector, ...classNames) {
       this.src = src;
       this.alt = alt;
       this.title = title;
       this.description = description;
       this.price = price;
+      this.classNames = classNames;
       this.parent = document.querySelector(parentSelector);
       this.moneyTransferValue = 75.22;
       this.changeCurrencyValue();
@@ -188,7 +189,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     render() {
       const element = document.createElement('div');
-      element.classList.add('menu__item');
+
+      if (this.classNames.length === 0) {
+        element.classList.add('menu__item');
+      } else {
+        this.classNames.forEach(className => element.classList.add(className));
+      }
+
       element.innerHTML = `
                   <img src=${this.src} alt=${this.alt}>
                   <h3 class="menu__item-subtitle">${this.title}</h3>
@@ -209,7 +216,9 @@ document.addEventListener('DOMContentLoaded', () => {
     "Меню \"Фитнес\"",
     "Меню \"Фитнес\" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!",
       9,
-    ".menu .container"
+    ".menu .container",
+    "menu__item",
+    "menu__item_large"
   ).render();
 
   new MenuCard(
@@ -218,7 +227,8 @@ document.addEventListener('DOMContentLoaded', () => {
     "Меню “Премиум”",
     "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
       23,
-    ".menu .container"
+    ".menu .container",
+    "menu__item"
   ).render();
 
   new MenuCard(
@@ -229,4 +239,56 @@ document.addEventListener('DOMContentLoaded', () => {
       15,
     ".menu .container"
   ).render();
+
+  // Forms
+  const forms = document.querySelectorAll('form');
+
+  const messages = {
+    loading: 'Загрузка',
+    success: 'Спасибо! Мы с Вами свяжемся',
+    failure: 'Что-то пошло не так...'
+  };
+
+  forms.forEach(form => postData(form));
+
+  function postData(form) {
+    form.addEventListener('submit', (evt) => {
+      evt.preventDefault();
+
+      const statusMessage = document.createElement('div');
+      statusMessage.classList.add('status');
+      statusMessage.textContent = messages.loading;
+      form.append(statusMessage);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'server.php');
+
+      // xhr.setRequestHeader('Content-type', 'multipart/form-data');
+      xhr.setRequestHeader('Content-type', 'application/json');
+      const formData = new FormData(form);
+
+      const object = {};
+      formData.forEach((value, key) => {
+        object[key] = value;
+      });
+
+      const json = JSON.stringify(object);
+
+      xhr.send(json);
+
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          console.log(xhr.response);
+          statusMessage.textContent = messages.success;
+          form.reset();
+          setTimeout(() => {
+            statusMessage.remove()
+          }, 2000);
+        } else {
+          statusMessage.textContent = messages.failure;
+        }
+      })
+
+    })
+  }
 });
