@@ -261,11 +261,6 @@ document.addEventListener('DOMContentLoaded', () => {
       form.append(statusMessage);
       form.insertAdjacentElement('afterend', statusMessage);
 
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'server.php');
-
-      // xhr.setRequestHeader('Content-type', 'multipart/form-data');
-      xhr.setRequestHeader('Content-type', 'application/json');
       const formData = new FormData(form);
 
       const object = {};
@@ -273,22 +268,27 @@ document.addEventListener('DOMContentLoaded', () => {
         object[key] = value;
       });
 
-      const json = JSON.stringify(object);
-
-      xhr.send(json);
-
-      xhr.addEventListener('load', () => {
-        if (xhr.status === 200) {
-          console.log(xhr.response);
+      fetch('server.php', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify(object)
+      })
+        .then(data => data.text())
+        .then(data => {
+          console.log(data);
           showThanksModal(messages.success);
-          form.reset();
           setTimeout(() => {
             statusMessage.remove()
           }, 2000);
-        } else {
+        })
+        .catch(() => {
           showThanksModal(messages.failure);
-        }
-      });
+        })
+        .finally(() => {
+          form.reset();
+        });
     })
   }
 
