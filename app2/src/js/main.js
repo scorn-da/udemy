@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   clearElement(menuCardsContainer);
 
-  class MenuCard {
+  /*class MenuCard {
     constructor(src, alt, title, description, price, parentSelector, ...classNames) {
       this.src = src;
       this.alt = alt;
@@ -204,37 +204,52 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
       this.parent.append(element);
     }
+  }*/
+
+  const getResource = async (url) => {
+    const res = await fetch(url);
+
+    if(!res.ok) {
+      throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+    }
+
+    return await res.json();
+  };
+
+  /*getResource('http://localhost:3000/menu')
+    .then(data => {
+      data.forEach(({img, altimg, title, descr, price}) => {
+        new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+      });
+    });*/
+
+  getResource('http://localhost:3000/menu')
+    .then(data => createCard(data));
+  
+  function createCard(data) {
+    data.forEach(({img, altimg, title, descr, price}) => {
+      const element = document.createElement('div');
+
+      const transferMoneyValue = 75.22;
+
+      price *= transferMoneyValue;
+
+      element.classList.add('menu__item');
+
+      element.innerHTML = `
+          <img src=${img} alt=${altimg}>
+          <h3 class="menu__item-subtitle">${title}</h3>
+          <div class="menu__item-descr">${descr}</div>
+          <div class="menu__item-divider"></div>
+          <div class="menu__item-price">
+              <div class="menu__item-cost">Цена:</div>
+              <div class="menu__item-total"><span>${price}</span> руб/день</div>
+          </div>
+       `;
+
+      document.querySelector('.menu .container').append(element);
+    });
   }
-
-  new MenuCard(
-    "img/tabs/vegy.jpg",
-    "vegy",
-    "Меню \"Фитнес\"",
-    "Меню \"Фитнес\" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!",
-      9,
-    ".menu .container",
-    "menu__item",
-    "menu__item_large"
-  ).render();
-
-  new MenuCard(
-    "img/tabs/elite.jpg",
-    "elite",
-    "Меню “Премиум”",
-    "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
-      23,
-    ".menu .container",
-    "menu__item"
-  ).render();
-
-  new MenuCard(
-    "img/tabs/post.jpg",
-    "post",
-    "Меню \"Постное\"",
-    "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.",
-      15,
-    ".menu .container"
-  ).render();
 
   // Forms
   const forms = document.querySelectorAll('form');
@@ -245,9 +260,22 @@ document.addEventListener('DOMContentLoaded', () => {
     failure: 'Что-то пошло не так...'
   };
 
-  forms.forEach(form => postData(form));
+  forms.forEach(form => bindPostData(form));
 
-  function postData(form) {
+
+  const postData = async (url, data) => {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: data
+    });
+
+    return await res.json();
+  };
+
+  function bindPostData(form) {
     form.addEventListener('submit', (evt) => {
       evt.preventDefault();
 
@@ -257,25 +285,21 @@ document.addEventListener('DOMContentLoaded', () => {
           display: block;
           margin: 0 auto;
       `;
+
       statusMessage.textContent = messages.loading;
       form.append(statusMessage);
       form.insertAdjacentElement('afterend', statusMessage);
 
       const formData = new FormData(form);
 
+      // const json =  JSON.stringify(Object.fromEntries(Object.entries(formData)));
+
       const object = {};
       formData.forEach((value, key) => {
         object[key] = value;
       });
 
-      fetch('server.php', {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify(object)
-      })
-        .then(data => data.text())
+      postData('http://localhost:3000/requests', JSON.stringify(object))
         .then(data => {
           console.log(data);
           showThanksModal(messages.success);
@@ -286,9 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(() => {
           showThanksModal(messages.failure);
         })
-        .finally(() => {
-          form.reset();
-        });
+        .finally(() => form.reset());
     })
   }
 
