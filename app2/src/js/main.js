@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }*/
 
-  const getResource = async (url) => {
+  /*const getResource = async (url) => {
     const res = await fetch(url);
 
     if(!res.ok) {
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     return await res.json();
-  };
+  };*/
 
   /*getResource('http://localhost:3000/menu')
     .then(data => {
@@ -223,8 +223,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });*/
 
-  getResource('http://localhost:3000/menu')
-    .then(data => createCard(data));
+  /*getResource('http://localhost:3000/menu')
+    .then(data => createCard(data));*/
+
+  axios.get('http://localhost:3000/menu')
+    .then(data => createCard(data.data));
   
   function createCard(data) {
     data.forEach(({img, altimg, title, descr, price}) => {
