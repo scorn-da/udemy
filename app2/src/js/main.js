@@ -435,11 +435,15 @@ document.addEventListener('DOMContentLoaded', () => {
     setActiveDot(slideIndex);
   }
 
+  function deleteNotDigitSymbols(str) {
+    return +str.replace(/\D/g, '');
+  }
+
   next.addEventListener('click', () => {
-    if (offset === +width.replace(/\D/g, '') * (slides.length - 1)) {
+    if (offset === deleteNotDigitSymbols(width) * (slides.length - 1)) {
       offset = 0;
     } else {
-      offset += +width.replace(/\D/g, '');
+      offset += deleteNotDigitSymbols(width);
     }
 
     slidesContainer.style.transform = `translateX(-${offset}px)`;
@@ -457,9 +461,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   prev.addEventListener('click', () => {
     if (offset === 0) {
-      offset = +width.replace(/\D/g, '') * (slides.length - 1);
+      offset = deleteNotDigitSymbols(width) * (slides.length - 1);
     } else {
-      offset -= +width.replace(/\D/g, '');
+      offset -= deleteNotDigitSymbols(width);
     }
 
     slidesContainer.style.transform = `translateX(-${offset}px)`;
@@ -480,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const slideTo = evt.target.getAttribute('data-slide-to');
 
       slideIndex = slideTo;
-      offset = +width.replace(/\D/g, '') * (slideTo - 1);
+      offset = deleteNotDigitSymbols(width) * (slideTo - 1);
 
       slidesContainer.style.transform = `translateX(-${offset}px)`;
 
