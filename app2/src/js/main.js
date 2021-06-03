@@ -414,23 +414,23 @@ document.addEventListener('DOMContentLoaded', () => {
     dots.push(dot);
   }
 
-  function makeTwoDigitNumber (number) {
+  function makeTwoDigitNumber(number) {
     return number < 10 ? `0${number}` : '' + number;
   }
 
-  function setCurrentSlide (number) {
+  function setCurrentSlide(number) {
     current.textContent = number;
   }
 
-  function setHalfOpacityToDots () {
+  function setHalfOpacityToDots() {
     dots.forEach(dot => dot.style.opacity = '.5');
   }
 
-  function setActiveDot (currentSlide) {
+  function setActiveDot(currentSlide) {
     dots[currentSlide - 1].style.opacity = '1';
   }
 
-  function setDotsStates () {
+  function setDotsStates() {
     setHalfOpacityToDots();
     setActiveDot(slideIndex);
   }
@@ -494,4 +494,77 @@ document.addEventListener('DOMContentLoaded', () => {
       setDotsStates(slideIndex);
     });
   });
+
+  // Calculator
+
+  const result = document.querySelector('.calculating__result span');
+  let sex = 'female',
+    height, weight, age,
+    ratio = 1.375;
+
+  function calcTotalCalories() {
+    if (!sex || !height || !weight || !age || !ratio) {
+      result.textContent = '!!!!';
+      return;
+    }
+
+    if (sex === 'female') {
+      result.textContent = '' + Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * ratio);
+    } else {
+      result.textContent = '' + Math.round((88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * ratio);
+    }
+  }
+
+  calcTotalCalories();
+
+  function getStaticInformation(parentSelector, activeClass) {
+    const elements = document.querySelectorAll(`${parentSelector} div`);
+
+    elements.forEach(elem => {
+      elem.addEventListener('click', (evt) => {
+        if (evt.target.dataset.ratio) {
+          ratio =  +evt.target.dataset.ratio;
+        } else {
+          sex = evt.target.getAttribute('id');
+        }
+
+        console.log(ratio, sex);
+
+        elements.forEach(element => {
+          element.classList.remove(activeClass);
+        });
+
+        evt.target.classList.add(activeClass);
+        calcTotalCalories();
+      })
+    });
+
+  }
+
+  getStaticInformation('#gender', 'calculating__choose-item_active');
+  getStaticInformation('.calculating__choose_big', 'calculating__choose-item_active');
+
+  function getDynamicInformation(selector) {
+    const input = document.querySelector(selector);
+
+    input.addEventListener('input', () => {
+      switch (input.getAttribute('id')) {
+        case 'height':
+          height = +input.value;
+          break;
+        case 'weight':
+          weight = input.value;
+          break;
+        case 'age':
+          age = input.value;
+          break;
+      }
+
+      calcTotalCalories();
+    });
+  }
+
+  getDynamicInformation('#height');
+  getDynamicInformation('#weight');
+  getDynamicInformation('#age');
 });
