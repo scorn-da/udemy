@@ -6,7 +6,7 @@ import PostStatusFilter from '../post-status-filter';
 import PostList from '../post-list';
 import PostAddForm from '../post-add-form';
 
-import './app.css';
+import './style.css';
 
 const App = () => {
   return (
@@ -15,9 +15,9 @@ const App = () => {
       <div className="search-panel d-flex">
         <SearchPanel />
         <PostStatusFilter />
-        <PostList />
-        <PostAddForm />
       </div>
+      <PostList />
+      <PostAddForm />
     </div>
   );
 };
