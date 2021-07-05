@@ -4,15 +4,15 @@ import './style.css';
 
 const PostAddForm = () => {
   return (
-    <form className="bottom-panel d-flex">
+    <form className='bottom-panel d-flex'>
       <input
-        className="form-control new-post-label"
-        type="text"
-        placeholder="Enter a new note"
+        className='form-control new-post-label'
+        type='text'
+        placeholder='Enter a new note'
       />
       <button
-        className="btn btn-outline-secondary"
-        type="submit"
+        className='btn btn-outline-secondary'
+        type='submit'
       >
         Add the note
       </button>

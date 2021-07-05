@@ -5,9 +5,9 @@ import './style.css';
 const SearchPanel = () => {
   return (
     <input
-      className="form-control search-input"
-      type="text"
-      placeholder="Notes search"
+      className='form-control search-input'
+      type='text'
+      placeholder='Notes search'
     />
   );
 };
