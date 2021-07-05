@@ -9,14 +9,20 @@ import PostAddForm from '../post-add-form';
 import './style.css';
 
 const App = () => {
+
+  const data = [
+    { label: 'It\'s simply', isImportant: false },
+    { label: 'My first note', isImportant: true },
+  ];
+
   return (
-    <div className="app">
+    <div className='app'>
       <AppHeader />
-      <div className="search-panel d-flex">
+      <div className='search-panel d-flex'>
         <SearchPanel />
         <PostStatusFilter />
       </div>
-      <PostList />
+      <PostList posts={data} />
       <PostAddForm />
     </div>
   );
