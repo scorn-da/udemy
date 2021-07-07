@@ -4,15 +4,22 @@ import './style.css';
 
 import PostListItem from '../post-list-item';
 
-const PostList = ({ posts }) => {
+const PostList = ({ posts, onDelete }) => {
 
-  const elements = posts.map((post, key) => {
+  const elements = posts.map((post) => {
+    const {id, ...postProps} = post;
+
     return (
       <li
         className='list-group-item'
-        key={key}
+        key={id}
       >
-        <PostListItem {...post} />
+        <PostListItem
+          {...postProps}
+          onDelete={() => {
+            onDelete(id)
+          }}
+        />
       </li>
     );
   });
