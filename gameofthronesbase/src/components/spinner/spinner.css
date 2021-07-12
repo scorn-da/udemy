@@ -1,0 +1,33 @@
+@keyframes ldio-f97ji03jhc {
+  0% { transform: rotate(0deg) }
+  50% { transform: rotate(180deg) }
+  100% { transform: rotate(360deg) }
+}
+.ldio-f97ji03jhc div {
+  position: absolute;
+  animation: ldio-f97ji03jhc 0.88s linear infinite;
+  width: 81.6px;
+  height: 81.6px;
+  top: 61.2px;
+  left: 61.2px;
+  border-radius: 50%;
+  box-shadow: 0 4.284000000000001px 0 0 #93dbe9;
+  transform-origin: 40.8px 42.942px;
+}
+.loadingio-spinner-eclipse-vww9d9jb7z9 {
+  width: 204px;
+  height: 204px;
+  margin: 0 auto;
+  display: block;
+  overflow: hidden;
+  background: transparent;
+}
+.ldio-f97ji03jhc {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform: translateZ(0) scale(1);
+  backface-visibility: hidden;
+  transform-origin: 0 0;
+}
+.ldio-f97ji03jhc div { box-sizing: content-box; }
